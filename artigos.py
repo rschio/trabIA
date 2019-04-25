@@ -42,6 +42,8 @@ def fitness(s, distribution):
         val += s.dataset[r][i]
     return val
 
+# TODO: check if after crossover the individual
+# respects the number of papers of reviewers.
 def crossover(s, d1, d2):
     cutPoint = int(s.crossoverrate * len(d1))
     d3 = list()
