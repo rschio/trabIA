@@ -71,11 +71,15 @@ def crossover(s, d1, d2):
     return ds
 
 def mutate(s, d):
-    x = int(s.mutationrate * len(d))
-    for i in (0, x):
-        p = random.randint(0, len(d) - 1)
-        n = random.randint(0,5)
-        d[p] = n
+    x = random.randint(0,100)/100.0
+    if x <= s.mutationrate:
+        valid = False
+        while (! valid):
+            p = random.randint(0, len(d) - 1)
+            n = random.randint(0,5)
+            d[p] = n
+            valid = checkReviewers(s, d)
+
     return d
 
 def crossAndMutate(s, d1, d2):
@@ -90,7 +94,7 @@ def crossAndMutate(s, d1, d2):
     return ret
 
     
-class HepElem:
+class HeapElem:
     def __init__(self, pos, fit):
        self.pos = pos 
        self.fit = fit
