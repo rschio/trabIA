@@ -53,7 +53,7 @@ def fitness(s, distribution):
 def createFirstPopulation (s):
     population = list()
     for i in range(s.lenPapers): 
-        dist = distribution(s)                                                  # Creates a population of the size of lenPapers   ##### TRY TO CHANGE THIS VALUE LATER  ########
+        dist = distribution(s) # Creates a population of the size of lenPapers   ##### TRY TO CHANGE THIS VALUE LATER  ########
         element = Individual(dist, fitness(s, dist))
         population.append(element)                                              # Adds the new individual to the population
     population.sort(key=lambda individual: individual.fit, reverse=True) # This is sorted (greatest fitness to smallest)
@@ -146,6 +146,7 @@ def reproduce(s, population, selectedPairs):
         elem1 = Individual(kids[1], fitness(s, kids[1]))                                                # cross and mutate individuals and put them on
         newPopu.append(elem0)                                                                           # the new generation
         newPopu.append(elem1)
+    newPopu.sort(key=lambda individual: individual.fit, reverse=True) # This is sorted (greatest fitness to smallest)
     return newPopu
 
 if __name__ == "__main__":
@@ -153,11 +154,9 @@ if __name__ == "__main__":
 
     for i in range(10):
         currentGeneration = createFirstPopulation(s)
-        for j in range(100):
+        for j in range(s.maxgen):
             pairs =  select(s, currentGeneration)
             currentGeneration = reproduce(s, currentGeneration, pairs)
 
         print(currentGeneration[0].distribution)
         print(currentGeneration[0].fit)
-
-    
