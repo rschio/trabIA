@@ -1,4 +1,5 @@
 import copy
+import heapq
 
 initial_board = [
     [0, 0, 1, 1, 1, 0, 0],
@@ -43,6 +44,9 @@ class Node:
 
     def __eq__(self, that):
         return self.state == that.state
+
+    def __lt__(self, that):
+        return (-self.total, self.cost) < (-that.total, that.cost)
 
 def heuristic(state):
     return len(generate_sons(state)) # TODO
@@ -129,11 +133,11 @@ def astar(board):
     # Create the start node
     start_node = Node(board)
     
-    visited = []              # Initialize visited nodes list
-    candidates = [start_node] # Initialize candidates nodes list
+    visited_states = []                # Initialize visited nodes list
+    candidates     = [ start_node ]    # Initialize candidates nodes list
 
     while len(candidates) > 0:
-        current_node = min(candidates, key=lambda node: (-node.total, node.cost)) # Find the minimum total cost (cost + rating)
+        current_node = heapq.heappop(candidates) # Find the minimum total cost (cost + rating)
 
         if is_goal(current_node.state):
             path = []
@@ -142,22 +146,20 @@ def astar(board):
                 current_node = current_node.parent
             path.append(current_node)
             print("Solucao encontrada: ", path[::-1])
+            break
 
-        candidates.remove(current_node)       # Remove from the candidates
-        visited.append(current_node.state)    # Add to the visited list
-
+        visited_states.append(current_node.state)             # Add to the visited list
         print("Current node cost: ", current_node.cost, " total: ", current_node.total)
 
-        for child in generate_sons(current_node.state): # Generate new possible states from here
-
-            if child in visited: # Skip generated child if his state were already visited
+        for child in generate_sons(current_node.state):       # Generate new possible states from here
+            if child in visited_states:                       # Skip generated child if his state were already visited
                 continue
 
             new_node        = Node(child, current_node)       # Create new node if current node as parent
             new_node.cost   = current_node.cost + 1           # Update the cost
             new_node.rating = heuristic(new_node.state)       # Update the rating score (heuristic)
             new_node.total  = new_node.cost + new_node.rating # Update it's total score
-            candidates.append(new_node)                       # Add to candidates list
+            heapq.heappush(candidates, new_node)              # Add to candidates list
 
 if __name__ == "__main__":
     astar(initial_board)
