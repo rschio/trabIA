@@ -109,8 +109,42 @@ def crossAndMutate(s, parent1, parent2):
     children[1] = mutate(s, children[1])
     return children
 
+def searchRoulette(roulette, num):
+    #TODO: use a binary search.
+    i = 0
+    for i in range(len(roulette)):
+        if num < roulette[i]:
+            break
+    return i
+
 def select(s, population):
-    #TODO: function to select the pairs to crossover, returns  a list of individuals
+    roulette = list()
+    fitSum = 0
+    for i in range(len(population)):
+        # example 0: fitSum = 0 and population[0].fit = 25
+        # fitSum = 25, append 25. Numbers between [0, 25) will
+        # select the population[0].
+        #
+        # example 1: fitSum = 25 and population[1].fit = 13
+        # fitSum = 38, append 38. Numbers between [25,38) will
+        # select the population[1].
+        fitSum += population[i].fit
+        roullete.append(fitSum)
+
+    l = list()
+    for i in range(len(population)/2):
+        n = random.randint(0, fitSum - 1)
+        p1 = searchRoulette(roulette, n)
+        p2 = 0
+        # Try at max 100 times.
+        for j in range(100): 
+            m = random.randint(0, fitSum - 1)
+            p2 = searchRoulette(roulette, m)
+            if p1 != p2:
+                pair = [population[p1], population[p2]]
+                l.append(pair) 
+                break
+    return l  
 
 def reproduce(s, population):
     newPopu = list()
