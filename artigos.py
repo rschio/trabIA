@@ -56,7 +56,8 @@ def createFirstPopulation (s):
         dist = distribution(s)                                                  # Creates a population of the size of lenPapers   ##### TRY TO CHANGE THIS VALUE LATER  ########
         element = Individual(dist, fitness(s, dist))
         population.append(element)                                              # Adds the new individual to the population
-    return population.sort(key=lambda individual: individual.fit, reverse=True) # This is sorted (greatest fitness to smallest)
+    population.sort(key=lambda individual: individual.fit, reverse=True) # This is sorted (greatest fitness to smallest)
+    return population
 
 # checkReviewers check if distribution respects
 # the max number of papers that reviewers can take.
@@ -139,7 +140,7 @@ def select(s, population):
 def reproduce(s, population, selectedPairs):
     newPopu = list()
     newPopu.append(population[0])                                                                       # sends the individual with the best fit to the
-    for i in range(selectedPairs):                                                                      # next generation
+    for i in range(len(selectedPairs)):                                                                      # next generation
         kids = crossAndMutate(s, selectedPairs[i][0].distribution, selectedPairs[i][1].distribution)    
         elem0 = Individual(kids[0], fitness(s, kids[0]))
         elem1 = Individual(kids[1], fitness(s, kids[1]))                                                # cross and mutate individuals and put them on
@@ -156,7 +157,7 @@ if __name__ == "__main__":
             pairs =  select(s, currentGeneration)
             currentGeneration = reproduce(s, currentGeneration, pairs)
 
-        print(currentGeneration[0].distibution)
+        print(currentGeneration[0].distribution)
         print(currentGeneration[0].fit)
 
     
