@@ -90,18 +90,13 @@ def crossover(s, parent1, parent2):
             descendents = [child1, child2]                                        # updates the descendents if a valid state was generated
     return descendents
 
-def mutate(s, d): 
+def mutate(s, distribution): 
     x = random.randint(0,100)/100.0
-    if x <= s.mutationrate:                                     # Determines if the mutation will happen
-        valid = False
-        while not valid:                                        # generate new states until one of them is valid
-            aux = d
-            p = random.randint(0, len(d) - 1)                   # Choses a position on the state   
-            n = random.randint(0,5)                             # choses a random reviewer
-            aux[p] = n                                          # Creates new possible mutated state
-            valid = checkReviewers(s, aux)                      # verifies if the mutation was valid
-        d = aux                                                 # mutates the state
-    return d
+    if x <= s.mutationrate:                                                     # Determines if the mutation will happen
+        p1 = random.randint(0, len(distribution) - 1)                           # Choses a position on the state   
+        p2 = random.randint(0, len(distribution) - 1)                           # choses another position on the state
+        distribution[p1], distribution[p2] = distribution[p2], distribution[p1] # swaps the revisors from two random positions
+    return distribution
 
 def crossAndMutate(s, parent1, parent2):
     children = crossover(s, parent1, parent2)
@@ -129,28 +124,39 @@ def select(s, population):
         # fitSum = 38, append 38. Numbers between [25,38) will
         # select the population[1].
         fitSum += population[i].fit
-        roullete.append(fitSum)
+        roulette.append(fitSum)
 
     l = list()
     for i in range(len(population)/2):
         n = random.randint(0, fitSum - 1)
+        m = random.randint(0, fitSum - 1)
         p1 = searchRoulette(roulette, n)
-        p2 = 0
-        # Try at max 100 times.
-        for j in range(100): 
-            m = random.randint(0, fitSum - 1)
-            p2 = searchRoulette(roulette, m)
-            if p1 != p2:
-                pair = [population[p1], population[p2]]
-                l.append(pair) 
-                break
+        p2 = searchRoulette(roulette, m)
+        pair = [population[p1], population[p2]]
+        l.append(pair) 
     return l  
 
-def reproduce(s, population):
+def reproduce(s, population, selectedPairs):
     newPopu = list()
-    newPopu.append(population[0])                   # sends the individual with the highest fit to the next generation
-    #TODO: function to create the next generetion
+    newPopu.append(population[0])                                                                       # sends the individual with the best fit to the
+    for i in range(selectedPairs):                                                                      # next generation
+        kids = crossAndMutate(s, selectedPairs[i][0].distribution, selectedPairs[i][1].distribution)    
+        elem0 = Individual(kids[0], fitness(s, kids[0]))
+        elem1 = Individual(kids[1], fitness(s, kids[1]))                                                # cross and mutate individuals and put them on
+        newPopu.append(elem0)                                                                           # the new generation
+        newPopu.append(elem1)
+    return newPopu
 
 if __name__ == "__main__":
     s = Scheduler(0.7, 0.1, "matrix.txt")
+
+    for i in range(10):
+        currentGeneration = createFirstPopulation(s)
+        for j in range(100):
+            pairs =  select(s, currentGeneration)
+            currentGeneration = reproduce(s, currentGeneration, pairs)
+
+        print(currentGeneration[0].distibution)
+        print(currentGeneration[0].fit)
+
     
