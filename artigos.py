@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import heapq
+import matplotlib.pyplot as plt
 class Scheduler:
     def __init__(self, crossoverrate, mutationrate, inputpath, maxgen=100):
         self.crossoverrate = crossoverrate
@@ -149,14 +150,65 @@ def reproduce(s, population, selectedPairs):
     newPopu.sort(key=lambda individual: individual.fit, reverse=True) # This is sorted (greatest fitness to smallest)
     return newPopu
 
-if __name__ == "__main__":
-    s = Scheduler(0.7, 0.1, "matrix.txt")
+def meansCalc(allTries):
+    means = list()
+    for i in range(0, len(allTries[0])):
+        mean = 0
+        for j in range(0, len(allTries)):
+            print("i:" + str(i))
+            print("j:" + str(j))
+            mean += allTries[j][i].fit
+        mean /= len(allTries)
+        means.append(mean)
+    return means
 
+def findBestTry(allTries):
+    best = 0
+    for i in range(0, len(allTries)):
+        if allTries[i][-1].fit > allTries[best][-1].fit:
+            best = i
+    return best
+
+def plotGraph(allTries):
+    best = findBestTry(allTries)
+    xAxisValues = range(0, len(allTries[0]))
+    yAxisValues = list()
+    for i in range(0, len(allTries[best])):
+        yAxisValues.append(allTries[best][i].fit)
+    line1 = plt.plot(xAxisValues, yAxisValues, label="melhor solucao")
+    
+    means = meansCalc(allTries)
+    yMeansValues = list()
+    for i in range(0, len(means)):
+        yMeansValues.append(means[i])
+    line2 = plt.plot(xAxisValues, yMeansValues, label="media")
+
+    plt.legend()
+    plt.xlabel("generation")
+    plt.ylabel("fitness")
+    plt.savefig("fitness.png")
+    plt.show()
+    plt.close()
+
+if __name__ == "__main__":
+    s = Scheduler(0.9, 0.4, "matrix.txt", maxgen=100)
+
+    allTries = list()
     for i in range(10):
         currentGeneration = createFirstPopulation(s)
+        bestsOfGenerations = list()
         for j in range(s.maxgen):
             pairs =  select(s, currentGeneration)
             currentGeneration = reproduce(s, currentGeneration, pairs)
-
-        print(currentGeneration[0].distribution)
-        print(currentGeneration[0].fit)
+            bestsOfGenerations.append(currentGeneration[0])
+        allTries.append(bestsOfGenerations)
+    with open("saida-genetico.txt", "w") as f:
+        best = findBestTry(allTries)
+        out = list()
+        for i in range(0, len(allTries[best])):
+            out.append(allTries[best][-1].distribution[i] + 1)
+        f.write("%s" % out[0])
+        for i in range(1, len(out)):
+            f.write(",%s" % out[i])
+        f.close()
+    plotGraph(allTries)
