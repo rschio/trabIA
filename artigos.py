@@ -203,7 +203,7 @@ if __name__ == "__main__":
     with open("saida-genetico.txt", "w") as f:
         best = findBestTry(allTries)
         out = list()
-        for i in range(0, len(allTries[best])):
+        for i in range(0, len(allTries[best][-1].distribution)):
             out.append(allTries[best][-1].distribution[i] + 1)
         f.write("%s" % out[0])
         for i in range(1, len(out)):
