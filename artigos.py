@@ -155,8 +155,6 @@ def meansCalc(allTries):
     for i in range(0, len(allTries[0])):
         mean = 0
         for j in range(0, len(allTries)):
-            print("i:" + str(i))
-            print("j:" + str(j))
             mean += allTries[j][i].fit
         mean /= len(allTries)
         means.append(mean)
