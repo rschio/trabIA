@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	p := flag.Int("p", 5, "number of papers")
-	r := flag.Int("r", 5, "number of reviewers")
+	p := flag.Int("p", 100, "number of papers")
+	r := flag.Int("r", 100, "number of reviewers")
 	f := flag.String("f", "matrix.txt", "output file name")
 	flag.Parse()
 

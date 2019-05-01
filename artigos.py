@@ -53,10 +53,16 @@ def fitness(s, distribution):
 # create our inicial random set
 def createFirstPopulation (s):
     population = list()
-    for i in range(s.lenPapers): 
-        dist = distribution(s) # Creates a population of the size of lenPapers   ##### TRY TO CHANGE THIS VALUE LATER  ########
+    
+    if s.lenReviewers < s.lenPapers:                                    # experimented some diferent relations here, I think this had the best result
+        tam = s.lenPapers                                               # for varying matrices. Didn't really understand why...
+    else:                                                                       
+        tam = s.lenReviewers                                        
+
+    for i in range(tam): 
+        dist = distribution(s)                                           # Creates a population of the size of lenPapers
         element = Individual(dist, fitness(s, dist))
-        population.append(element)                                              # Adds the new individual to the population
+        population.append(element)                                       # Adds the new individual to the population
     population.sort(key=lambda individual: individual.fit, reverse=True) # This is sorted (greatest fitness to smallest)
     return population
 
