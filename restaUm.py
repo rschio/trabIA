@@ -34,9 +34,10 @@ invalid_set = [
 ]
 
 class Node:
-    def __init__(self, state, parent = None):
+    def __init__(self, state, parent = None, movement = None):
         self.parent = parent
         self.state  = state
+        self.movement = movement
         
         self.cost   = 0
         self.rating = 0
@@ -46,10 +47,17 @@ class Node:
         return self.state == that.state
 
     def __lt__(self, that):
-        return (-self.total, self.cost) < (-that.total, that.cost)
+        #return (self.total, self.cost) < (-that.total, that.cost)
+        return self.total < that.total
 
 def heuristic(state):
-    return len(generate_sons(state)) # TODO
+    counter = 0
+    
+    for i in range(0,7):
+        for j in range(0,7):
+            if filled_valid_position(state, i, j):
+                counter += 1
+    return counter
 
 def valid_position(i, j):
     """Check if the indexes are valid on the board"""
@@ -91,7 +99,7 @@ def generate_sons(state):
                 new_state[i][j]     = 0          # Remove pin from current position
                 new_state[i - 1][j] = 0          # Remove jumped pin
                 new_state[i - 2][j] = 1          # Set new pin position
-                child.append(new_state)
+                child.append((new_state, [(i, j), (i - 2, j)]))
 
             # Check possible move down
             if (filled_valid_position(state, i, j)
@@ -102,7 +110,7 @@ def generate_sons(state):
                 new_state[i][j]     = 0          # Remove pin from current position
                 new_state[i + 1][j] = 0          # Remove jumped pin
                 new_state[i + 2][j] = 1          # Set new pin position
-                child.append(new_state)
+                child.append((new_state, [(i, j), (i + 2, j)]))
 
             # Check possible move left
             if (filled_valid_position(state, i, j)
@@ -113,7 +121,7 @@ def generate_sons(state):
                 new_state[i][j]     = 0          # Remove pin from current position
                 new_state[i][j - 1] = 0          # Remove jumped pin
                 new_state[i][j - 2] = 1          # Set new pin position
-                child.append(new_state)
+                child.append((new_state, [(i, j), (i, j - 2)]))
 
             # Check possible move right
             if (filled_valid_position(state, i, j)
@@ -124,7 +132,7 @@ def generate_sons(state):
                 new_state[i][j]     = 0          # Remove pin from current position
                 new_state[i][j + 1] = 0          # Remove jumped pin
                 new_state[i][j + 2] = 1          # Set new pin position
-                child.append(new_state)
+                child.append((new_state, [(i, j), (i, j + 2)]))
 
     return child
 
@@ -139,23 +147,30 @@ def astar(board):
     while len(candidates) > 0:
         current_node = heapq.heappop(candidates) # Find the minimum total cost (cost + rating)
 
+
         if is_goal(current_node.state):
             path = []
             while current_node.parent:
-                path.append(current_node)
+                path.append("{} - {}".format(str(current_node.movement[0]), str(current_node.movement[1])))
                 current_node = current_node.parent
-            path.append(current_node)
-            print("Solucao encontrada: ", path[::-1])
+
+            with open('./saida-resta-um.txt', 'w') as f:
+                f.write('==SOLUCAO\n')
+                for i in range(len(path) - 1) :
+                    f.write('{}\n'.format(path[i]))
+                
+                f.write('FINAL {}\n'.format(path[i + 1]))
+
             break
 
         visited_states.append(current_node.state)             # Add to the visited list
-        print("Current node cost: ", current_node.cost, " total: ", current_node.total)
+        # print("Current node cost: ", current_node.cost, " total: ", current_node.total)
 
-        for child in generate_sons(current_node.state):       # Generate new possible states from here
+        for child, movement in generate_sons(current_node.state):       # Generate new possible states from here
             if child in visited_states:                       # Skip generated child if his state were already visited
                 continue
 
-            new_node        = Node(child, current_node)       # Create new node if current node as parent
+            new_node        = Node(child, current_node, movement)       # Create new node if current node as parent
             new_node.cost   = current_node.cost + 1           # Update the cost
             new_node.rating = heuristic(new_node.state)       # Update the rating score (heuristic)
             new_node.total  = new_node.cost + new_node.rating # Update it's total score
