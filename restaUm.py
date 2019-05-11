@@ -1,3 +1,9 @@
+# Alunos:
+# Caio Riyousuke Miyada Tokunaga, RGA: 201719040028 
+# Claudio Padilha da Silva, RGA: 201719040036
+# Marco Ortavio Duarte de Almeida, RGA: 201519070365
+# Rodrigo Schio Wengenroth Silva, RGA: 201719040010
+
 import copy
 import heapq
 

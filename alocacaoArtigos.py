@@ -1,7 +1,14 @@
+# Alunos:
+# Caio Riyousuke Miyada Tokunaga, RGA: 201719040028
+# Claudio Padilha da Silva, RGA: 201719040036
+# Marco Ortavio Duarte de Almeida, RGA: 201519070365
+# Rodrigo Schio Wengenroth Silva, RGA: 201719040010
+
 import numpy as np
 import random
 import matplotlib.pyplot as plt
 import sys
+
 
 class Scheduler:
     def __init__(self, crossoverrate, mutationrate, inputpath, maxgen=100):
@@ -215,7 +222,7 @@ def alocator(crossoverrate, mutationrate, inputpath, maxgen=100):
             currentGeneration = reproduce(s, currentGeneration, pairs)
             bestsOfGenerations.append(currentGeneration[0])
         allTries.append(bestsOfGenerations)
-    # Write the best combination to file.
+    # Write the best combination and execution time to file. 
     with open("saida-genetico.txt", "w") as f:
         best = findBestTry(allTries)
         out = list()
