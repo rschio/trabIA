@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import sys
 
 class Scheduler:
     def __init__(self, crossoverrate, mutationrate, inputpath, maxgen=100):
@@ -202,8 +203,8 @@ def plotGraph(allTries):
     plt.ylabel("fitness")
     plt.savefig("fitness.png")
 
-if __name__ == "__main__":
-    s = Scheduler(0.9, 0.4, "matrix.txt", maxgen=100)
+def alocator(crossoverrate, mutationrate, inputpath, maxgen=100):
+    s = Scheduler(crossoverrate, mutationrate, inputpath, maxgen)
 
     allTries = list()
     for i in range(10):
@@ -226,3 +227,16 @@ if __name__ == "__main__":
         f.close()
     # Save the graph to file.
     plotGraph(allTries)
+    
+
+if __name__ == "__main__":
+    if len(sys.argv) < 4:
+        print("Usage: python alocacaoArtigos.py [crossoverrate] [mutationrate] [inputpath] [maxgen]")
+    else: 
+        csrate = float(sys.argv[1])
+        mtrate = float(sys.argv[2])
+        inputp = sys.argv[3]
+        if len(sys.argv) > 4:
+            alocator(csrate, mtrate, inputp, int(sys.argv[4]))
+        else:
+            alocator(csrate, mtrate, inputp)
