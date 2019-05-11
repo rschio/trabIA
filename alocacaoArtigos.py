@@ -193,7 +193,7 @@ def plotGraph(allTries):
     
     means = meansCalc(allTries)
     yMeansValues = list()
-    # Append the average fitness of each generation of all tries.
+    # Append the average of all tries' best fitness.
     for i in range(0, len(means)):
         yMeansValues.append(means[i])
     line2 = plt.plot(xAxisValues, yMeansValues, label="media")
